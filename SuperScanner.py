@@ -44,7 +44,7 @@ def readJson(server: JavaServer) -> None:
         data["host_port"] = query_res.raw["hostport"]
         data["map"] = query_res.map
         data["plugins"] = query_res.software.plugins
-    except Exception:  # TODO: Check what this actually excepts
+    except Exception:
         pass
     return data
 
@@ -68,14 +68,10 @@ def verifyAndInsert(ip,port,mctype,scannedServer):
             if not data['online'] :
                 return
             data['online'] = False
-        '''
-        database.execute("replace into mcservers(address,ip,port,type,updateTime,data) values (?,?,?,?,?,?)", 
-                    (address,ip,port,mctype,updateTime,json.dumps(data,ensure_ascii=False))
-            )
-        '''
         database.execute("UPDATE mcservers SET ip=?,port=?,type=?,updateTime=?,data=? WHERE address = ?", 
                     (ip,port,mctype,updateTime,json.dumps(data,ensure_ascii=False),address)
             )
+        database.commit()
         print("Updated %s !" % address)
         
 def scanner():
