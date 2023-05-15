@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MinecraftFinder</title>
+  </head>
+  <body>
+  <style>
+        table,table tr th, table tr td { border:1px solid #0094ff; }
+        table { width: 200px; min-height: 25px; line-height: 25px; text-align: center; border-collapse: collapse;}   
+    </style>
+	Github: https://github.com/zhaodice/MinecraftFinder <br/>
+	This is a page that can view server it has found, welcome to my minecraft server : trpgbot.com
+    <table id="myTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Address</th>
+          <th>IP</th>
+		  <th>Port</th>
+		  <th>Type</th>
+		  <th>UpdateTime</th>
+		  <th>CreateTime</th>
+		  <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <script>
+	function parseServerData(index,serverData) {
+	  if(index==7){
+		  const { online, version, protocol, motd, player_count, player_max, players, ping } = JSON.parse(serverData);
+		  onlineNotice = ""
+		  if(online){
+			onlineNotice='<strong><span style="color:#006600;">'+ping.toFixed(2)+'ms</span></strong>'
+		  }else{
+			onlineNotice='<strong><span style="color:#E53333;">OFFLINE</span></strong>'
+		  }
+			  // 将数据转换为表格行
+			  return [
+				player_count+"/"+player_max+" "+version+" ( "+ onlineNotice +" )",
+				'"'+motd+'"'
+			  ].join("<br/>");
+
+	  }else{
+		return serverData;
+	  }
+	}
+      // 获取table元素和tbody元素
+      const table = document.querySelector('#myTable');
+      const tbody = table.querySelector('tbody');
+
+      // 向./servers发起HTTP请求
+      fetch('../servers')
+        .then(response => response.json())
+        .then(data => {
+          // 遍历数据中的每一行，创建表格行并填充单元格内容
+          data.data.forEach(rowData => {
+            const row = document.createElement('tr');
+            rowData.forEach((cellData,index) => {
+              const cell = document.createElement('td');
+              cell.innerHTML = parseServerData(index,cellData);
+              row.appendChild(cell);
+            });
+            tbody.appendChild(row);
+          });
+        })
+        .catch(error => console.error(error));
+    </script>
+  </body>
+</html>
