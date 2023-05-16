@@ -64,10 +64,9 @@
 				  cell.innerHTML = parseServerData(index,cellData);
 				  trElem.appendChild(cell);
 				});
+				trElem.lastChild.addEventListener('click',clickEvent);
 			}
-            const row = document.createElement('tr');
-			initLine(row,rowData)
-			row.lastChild.addEventListener('click',function(){
+			function clickEvent(){
 				inputId = row.childNodes[0].innerText
 				row.innerHTML="<td>"+inputId+"</td><td></td><td></td><td></td><td></td><td></td><td></td><td>LOADING...</td>"
 				fetch('../freshServers?id='+inputId)
@@ -76,8 +75,10 @@
 							initLine(row,data.data)
 						}
 					)
-				
-			});
+			}
+            const row = document.createElement('tr');
+			initLine(row,rowData)
+			row.lastChild.addEventListener('click',clickEvent);
             tbody.appendChild(row);
           });
         })
