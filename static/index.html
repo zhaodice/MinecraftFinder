@@ -33,9 +33,9 @@
 		  const { online, version, protocol, motd, player_count, player_max, players, ping } = JSON.parse(serverData);
 		  onlineNotice = ""
 		  if(online){
-			onlineNotice='<strong><span style="color:#006600;">'+ping.toFixed(2)+'ms</span></strong>'
+			onlineNotice='<strong><span style="color:#006600;" id="Fresh">'+ping.toFixed(2)+'ms</span></strong>'
 		  }else{
-			onlineNotice='<strong><span style="color:#E53333;">OFFLINE</span></strong>'
+			onlineNotice='<strong><span style="color:#E53333;" id="Fresh">OFFLINE</span></strong>'
 		  }
 			  // 将数据转换为表格行
 			  return [
@@ -66,7 +66,8 @@
 				});
 			}
             const row = document.createElement('tr');
-			row.addEventListener('click',function(){
+			initLine(row,rowData)
+			row.lastChild.addEventListener('click',function(){
 				inputId = row.childNodes[0].innerText
 				row.innerHTML="<td>"+inputId+"</td><td></td><td></td><td></td><td></td><td></td><td></td><td>LOADING...</td>"
 				fetch('../freshServers?id='+inputId)
@@ -77,7 +78,6 @@
 					)
 				
 			});
-			initLine(row,rowData)
             tbody.appendChild(row);
           });
         })
