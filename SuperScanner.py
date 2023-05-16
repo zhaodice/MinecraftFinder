@@ -7,6 +7,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 from mcstatus import JavaServer
 
+freshing = False
 app = Flask(__name__)
 database = sqlite3.connect("database.db", check_same_thread=False)
 database.execute("PRAGMA timezone = 'Asia/Shanghai'")
@@ -44,7 +45,7 @@ def readJson(server: JavaServer) -> None:
         data["host_port"] = query_res.raw["hostport"]
         data["map"] = query_res.map
         data["plugins"] = query_res.software.plugins
-    except Exception:
+    except Exception:  # TODO: Check what this actually excepts
         pass
     return data
 
@@ -85,10 +86,15 @@ def scanner():
                 print("Verify IP...%s:%d" % (ip,port))
                 verifyAndInsert(ip,port,'java',True)
 def fresh():
+    global freshing
+    if freshing :
+        return
+    freshing = True
     sql = database.execute("SELECT * FROM mcservers ORDER BY updateTime ASC;")
     datas = sql.fetchall()
     for data in datas:
         verifyAndInsert(data[2],data[3],data[4],False)
+    freshing = False
 
 @app.route('/servers', methods=["GET"])
 def serverGet():
@@ -96,6 +102,19 @@ def serverGet():
     data = sql.fetchall()
     return jsonify(code=0,data=data)
     
+@app.route('/freshServers', methods=["GET"])
+def serverFresh():
+    inputId = request.args.get("id", -1)
+    if inputId==-1 :
+        freshThread=threading.Thread(target=fresh)
+        freshThread.start()
+        return jsonify(code=0)
+    else:
+        ip,port,mctype = database.execute("SELECT ip,port,type FROM mcservers where id=?",(inputId,)).fetchall()[0]
+        verifyAndInsert(ip,port,mctype,False)
+        data = database.execute("SELECT * FROM mcservers where id=?",(inputId,)).fetchall()[0]
+        return jsonify(code=0,data=data)
+
     
 if __name__ == '__main__':
 

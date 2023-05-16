@@ -57,12 +57,27 @@
         .then(data => {
           // 遍历数据中的每一行，创建表格行并填充单元格内容
           data.data.forEach(rowData => {
+			function initLine(trElem,data){
+				trElem.innerHTML="";
+				data.forEach((cellData,index) => {
+				  const cell = document.createElement('td');
+				  cell.innerHTML = parseServerData(index,cellData);
+				  trElem.appendChild(cell);
+				});
+			}
             const row = document.createElement('tr');
-            rowData.forEach((cellData,index) => {
-              const cell = document.createElement('td');
-              cell.innerHTML = parseServerData(index,cellData);
-              row.appendChild(cell);
-            });
+			row.addEventListener('click',function(){
+				inputId = row.childNodes[0].innerText
+				row.innerHTML="<td>"+inputId+"</td><td></td><td></td><td></td><td></td><td></td><td></td><td>LOADING...</td>"
+				fetch('../freshServers?id='+inputId)
+					.then(response => response.json())
+					.then(data => {
+							initLine(row,data.data)
+						}
+					)
+				
+			});
+			initLine(row,rowData)
             tbody.appendChild(row);
           });
         })
