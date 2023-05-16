@@ -33,9 +33,9 @@
 		  const { online, version, protocol, motd, player_count, player_max, players, ping } = JSON.parse(serverData);
 		  onlineNotice = ""
 		  if(online){
-			onlineNotice='<strong><span style="color:#006600;" id="Fresh">'+ping.toFixed(2)+'ms</span></strong>'
+			onlineNotice='<strong><span style="color:#006600;">'+ping.toFixed(2)+'ms</span></strong>'
 		  }else{
-			onlineNotice='<strong><span style="color:#E53333;" id="Fresh">OFFLINE</span></strong>'
+			onlineNotice='<strong><span style="color:#E53333;">OFFLINE</span></strong>'
 		  }
 			  // 将数据转换为表格行
 			  return [
